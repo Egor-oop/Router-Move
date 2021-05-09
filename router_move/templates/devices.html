@@ -13,27 +13,31 @@
         </div>
         <div class="main">
             <div class="device-list">
-		<table>
-            <tr class="grey-td">
-                <th>name</th>
-                <th>ip</th>
-                <th>user</th>
-                <th>type</th>
-            </tr>
-		{% for device in devices %}
-                    <tr><td class="wide">{{ device.name }}</td><td>{{ device.ip }}</td><td>{{ device.user_name }}</td><td>{{ device.device_type }}</td></tr>
-                {% endfor %}
-                </table>
+                <form name="device_list" method="post">
+                    <table>
+                        <tr class="grey-td">
+                            <th>name</th>
+                            <th>ip</th>
+                            <th>user</th>
+                            <th>type</th>
+                            <th>del</th>
+                        </tr>
+                        {% for device in devices %}
+                            <tr><td class="wide">{{ device.name }}</td><td>{{ device.ip }}</td><td>{{ device.user_name }}</td><td>{{ device.device_type }}</td><td><input type="checkbox" name="name" value={{ device.name }}>Del</td></tr>
+                        {% endfor %}
+                    </table>
+                <input type="submit" value="DELETE">
+                </form>
             </div>
             <div>
 		<a href="/devices/newdevice" class="shine-button">Add</a>
             </div>
-	    <form name="deleteDevice" method="post">
+	    <!-- <form name="deleteDevice" method="post">
 		<p><b>Delete device(s)</b>
 		<input type="text" placeholder="enter name separated commas" name="name">
 		</p>
 		<input type="submit" value="DELETE">
-	    </form>
+	    </form> -->
         </div>
     </div>
 {% endblock %}

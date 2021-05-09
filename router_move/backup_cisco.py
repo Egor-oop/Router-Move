@@ -25,8 +25,6 @@ if not os.path.isdir(path):
 
 os.chdir(path)
 
-
-
 now = datetime.datetime.now()
 
 #host = "192.168.6.146"
@@ -35,20 +33,23 @@ now = datetime.datetime.now()
 #filename_prefix = "cisco-backup"
 
 for device in devices:
-     tn = telnetlib.Telnet(device['ip'])
-     tn.read_until(b"ame:")
-     tn.write(device['user_name'].encode("ascii") + b"\n")
-     tn.read_until(b"Password:")
-     tn.write(device['users_passwd'].encode("ascii") + b"\n")
-     tn.write(b"terminal length 0\n")
-     tn.write(b"sh run\n")
-     tn.write(b"exit\n")
-     output=tn.read_all()
-     output = output.decode("ascii")
+    try:
+        tn = telnetlib.Telnet(device['ip'])
+        tn.read_until(b"ame:")
+        tn.write(device['user_name'].encode("ascii") + b"\n")
+        tn.read_until(b"Password:")
+        tn.write(device['users_passwd'].encode("ascii") + b"\n")
+        tn.write(b"terminal length 0\n")
+        tn.write(b"sh run\n")
+        tn.write(b"exit\n")
+        output=tn.read_all()
+        output = output.decode("ascii")
 
-     filename_pattern = '{}_backup.rsc'
-     filename = filename_pattern.format(device['name'])
+        filename_pattern = '{}_backup.rsc'
+        filename = filename_pattern.format(device['name'])
 
-     fp=open(filename,"w")
-     fp.write(output)
-     fp.close()
+        fp=open(filename,"w")
+        fp.write(output)
+        fp.close()
+    except Exception as e:
+        continue

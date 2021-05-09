@@ -19,26 +19,32 @@ with connection.cursor() as cur:
 
 
 for device in devices:
-        print("Connect to {}:".format(device['ip']))
+    print("Connect to {}:".format(device['ip']))
 
-        #Создание сокета и объекта устройства
-        s = libapi.socketOpen(device['ip'])
-        dev_api = libapi.ApiRos(s)
+    #Создание сокета и объекта устройства
+    try:
+    	s = libapi.socketOpen(device['ip'])
+    except Exception as e:
+        continue
+    dev_api = libapi.ApiRos(s)
 
-        #Авторизация на устройстве
+    #Авторизация на устройстве
+    try:
         if not dev_api.login(device['user_name'], device['users_passwd']):
-                break
+            break
+    except Exception as e:
+        continue
 
-        command = ["/export", f"=file={device['name']}_backup"]
+    command = ["/export", f"=file={device['name']}_backup"]
 
-        #Выполнение команды на устройстве
-        dev_api.writeSentence(command)
+    #Выполнение команды на устройстве
+    dev_api.writeSentence(command)
 
-        #Получение результата выполнения команды
-        res = libapi.readResponse(dev_api)
+    #Получение результата выполнения команды
+    res = libapi.readResponse(dev_api)
 
-        #Закрытие сокета
-        libapi.socketClose(s)
+    #Закрытие сокета
+    libapi.socketClose(s)
 
 day = str(datetime.date.today())
 
@@ -52,35 +58,42 @@ os.chdir(path)
 filename_pattern = '{}_backup.rsc'
 
 for device in devices:
-        print("Connect to {}:".format(device['ip']))
+    print("Connect to {}:".format(device['ip']))
 
-        filename = filename_pattern.format(device['name'])
-
-        with ftplib.FTP(device['ip'], device['user_name'], device['users_passwd']) as con:
-                with open(filename, "wb") as f:
-                        con.retrbinary('RETR ' + filename, f.write)
-                        print("    File transfer: done")
+    filename = filename_pattern.format(device['name'])
+    try:
+    	with ftplib.FTP(device['ip'], device['user_name'], device['users_passwd']) as con:
+            with open(filename, "wb") as f:
+                con.retrbinary('RETR ' + filename, f.write)
+            print("    File transfer: done")
+    except Exception as e:
+        continue
 
 for device in devices:
-        print("Connect to {}:".format(device['ip']))
+    print("Connect to {}:".format(device['ip']))
 
-        #Создание сокета и объекта устройства
-        s = libapi.socketOpen(device['ip'])
-        dev_api = libapi.ApiRos(s)
+    #Создание сокета и объекта устройства
+    try:
+    	s = libapi.socketOpen(device['ip'])
+    except Exception as e:
+        continue
+    dev_api = libapi.ApiRos(s)
 
-        #Авторизация на устройстве
+    #Авторизация на устройстве
+    try:
         if not dev_api.login(device['user_name'], device['users_passwd']):
-                break
+            break
+    except Exception as e:
+        continue
 
-        #Команда для добавление bridge-интерфейса
-        command = ["/file/remove", f"=numbers={device['name']}_backup"]
+    #Команда для добавление bridge-интерфейса
+    command = ["/file/remove", f"=numbers={device['name']}_backup"]
 
-        #Выполнение команды на устройстве
-        dev_api.writeSentence(command)
+    #Выполнение команды на устройстве
+    dev_api.writeSentence(command)
 
-        #Получение результата выполнения команды
-        res = libapi.readResponse(dev_api)
+    #Получение результата выполнения команды
+    res = libapi.readResponse(dev_api)
 
-        #Закрытие сокета
-        libapi.socketClose(s)
-
+    #Закрытие сокета
+    libapi.socketClose(s)

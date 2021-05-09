@@ -18,7 +18,6 @@ with connection.cursor() as cur:
     for result in results:
         devices.append(result)
 
-
 day = str(datetime.date.today())
 path = f'/home/backup/{day}/eltex'
 if not os.path.isdir(path):
@@ -36,22 +35,25 @@ now = datetime.datetime.now()
 #filename_prefix = "eltex-backup"
 
 for device in devices:
-    tn = telnetlib.Telnet(device['ip'])
-    tn.read_until(b"ame:")
-    tn.write(device['user_name'].encode("ascii") + b"\n")
-    tn.read_until(b"Password:")
-    tn.write(device['users_passwd'].encode("ascii") + b"\n")
-    tn.read_until(b'#')
-    tn.write(b'terminal datadump\n')
-    tn.read_until(b'#')
-    tn.write(b"sh run\n")
-    tn.write(b"exit\n")
-    output=tn.read_until(b'#')
-    output = output.decode("ascii")
+    try:
+        tn = telnetlib.Telnet(device['ip'])
+        tn.read_until(b"ame:")
+        tn.write(device['user_name'].encode("ascii") + b"\n")
+        tn.read_until(b"Password:")
+        tn.write(device['users_passwd'].encode("ascii") + b"\n")
+        tn.read_until(b'#')
+        tn.write(b'terminal datadump\n')
+        tn.read_until(b'#')
+        tn.write(b"sh run\n")
+        tn.write(b"exit\n")
+        output=tn.read_until(b'#')
+        output = output.decode("ascii")
 
-    filename_pattern = '{}_backup.rsc'
-    filename = filename_pattern.format(device['name'])
+        filename_pattern = '{}_backup.rsc'
+        filename = filename_pattern.format(device['name'])
 
-    fp=open(filename,"w")
-    fp.write(output)
-    fp.close()
+        fp=open(filename,"w")
+        fp.write(output)
+        fp.close()
+    except Exception as e:
+        continue
