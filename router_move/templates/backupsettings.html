@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Backup settings{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="main">
+            <button><a href="/backup">back</a></button>
+            <form name="backupsettings" method="post">
+                <p><b><h1>Options</h1></b><br>
+		<div>
+    		    <h3>Time</h3>
+                    <select name="minute">
+			<option value="star">*</option>
+			{% for i in range(1, 60) %}
+			<option value="{{i}}">{{i}}</option>
+			{% endfor %}
+	      	    </select>
+		    min
+		    <select name="hours">
+			<option value="star">*</option>
+			{% for i in range(1, 24) %}
+			    <option value="{{i}}">{{i}}</option>
+			{% endfor %}
+	      	    </select>
+		    hour
+	        </div>
+		<div>
+		    <h3>Date of week</h3>
+		    <input type="checkbox" name="weekday" value="Mon">Mon
+		    <input type="checkbox" name="weekday" value="Tue">Tue
+	    	    <input type="checkbox" name="weekday" value="Wed">Wed
+	            <input type="checkbox" name="weekday" value="Thu">Thu
+		    <input type="checkbox" name="weekday" value="Fri">Fri
+	            <input type="checkbox" name="weekday" value="Sat">Sat
+		    <input type="checkbox" name="weekday" value="Sun">Sun
+		</div>
+		<h3>Day</h3>
+		    <select name="day">
+			<option value="star">*</option>
+			{% for i in range(1, 32) %}
+			<option value="{{i}}">{{i}}</option>
+			{% endfor %}
+	      	    </select>
+		    Day
+		</div>
+                </p>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+{% endblock %}

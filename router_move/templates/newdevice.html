@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Add device{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="main">
+            <button><a href="/devices">back</a></button>
+            <form name="newdeviceform" method="post">
+		<div>
+                <p><b>Options</b><br>
+                    <input type="text" placeholder="name" name="name">
+                    <input type="text" placeholder="ip" name="ip">
+                    <input type="text" placeholder="user" name="user">
+                    <input type="password" placeholder="password" name="passwd">
+                    <select name="device-type">
+                        <option value="mikrotik">mikrotik</option>
+                        <option value="cisco">cisco</option>
+                        <option value="eltex">eltex</option>
+                    </select>
+            </p>
+		</div>
+		<div class="content">
+            <input type="submit" value="Add">
+		</div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
