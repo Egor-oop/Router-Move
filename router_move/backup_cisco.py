@@ -21,16 +21,16 @@ with connection.cursor() as cur:
 day = str(datetime.date.today())
 path = f'/home/backup/{day}/cisco'
 if not os.path.isdir(path):
-     os.makedirs(path)
+    os.makedirs(path)
 
 os.chdir(path)
 
 now = datetime.datetime.now()
 
-#host = "192.168.6.146"
-#username = "oleg"
-#password = "ovg7979celeron"
-#filename_prefix = "cisco-backup"
+# host = "192.168.6.146"
+# username = "oleg"
+# password = "ovg7979celeron"
+# filename_prefix = "cisco-backup"
 
 for device in devices:
     try:
@@ -42,13 +42,13 @@ for device in devices:
         tn.write(b"terminal length 0\n")
         tn.write(b"sh run\n")
         tn.write(b"exit\n")
-        output=tn.read_all()
+        output = tn.read_all()
         output = output.decode("ascii")
 
         filename_pattern = '{}_backup.rsc'
         filename = filename_pattern.format(device['name'])
 
-        fp=open(filename,"w")
+        fp = open(filename, "w")
         fp.write(output)
         fp.close()
     except Exception as e:

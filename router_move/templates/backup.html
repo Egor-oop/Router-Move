@@ -3,24 +3,13 @@
 {% block title %}Backup{% endblock %}
 
 {% block content %}
-    <div class="content">
-        <div class="tree">
-	<div class="tree-text">
-            <a href="/devices">Devices</a><br>
-            <a href="/backup">Backup</a><br>
-            <a href="/statistic">Statistic</a></button>
-        </div>
-	</div>
-        <div class="main">
-		<div class="backup-settings">
-		    <h1>Options</h1>
-		    <button><a class="backup-settings-btn" href="/backup/settings">Settings</a></button>
-		</div>
-		<div class="create-backup-for-all">
-		    <form name="newbackup" method="post">
-                        <input class="create-backup-for-all-inp" type="submit" value="Create for all now">
-                    </form>
-		</div>
-        </div>
-    </div>
+<div class="backup-settings">
+    <h1>Options</h1>
+    <button><a class="backup-settings-btn" href="/backup/settings">Settings</a></button>
+</div>
+<div class="create-backup-for-all">
+    <form name="newbackup" method="post">
+        <input class="create-backup-for-all-inp" type="submit" value="Create for all now">
+    </form>
+</div>
 {% endblock %}

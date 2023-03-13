@@ -17,18 +17,17 @@ with connection.cursor() as cur:
     for result in results:
         devices.append(result)
 
-
 for device in devices:
     print("Connect to {}:".format(device['ip']))
 
-    #Создание сокета и объекта устройства
+    # Создание сокета и объекта устройства
     try:
-    	s = libapi.socketOpen(device['ip'])
+        s = libapi.socketOpen(device['ip'])
     except Exception as e:
         continue
     dev_api = libapi.ApiRos(s)
 
-    #Авторизация на устройстве
+    # Авторизация на устройстве
     try:
         if not dev_api.login(device['user_name'], device['users_passwd']):
             break
@@ -37,13 +36,13 @@ for device in devices:
 
     command = ["/export", f"=file={device['name']}_backup"]
 
-    #Выполнение команды на устройстве
+    # Выполнение команды на устройстве
     dev_api.writeSentence(command)
 
-    #Получение результата выполнения команды
+    # Получение результата выполнения команды
     res = libapi.readResponse(dev_api)
 
-    #Закрытие сокета
+    # Закрытие сокета
     libapi.socketClose(s)
 
 day = str(datetime.date.today())
@@ -51,7 +50,7 @@ day = str(datetime.date.today())
 path = f'/home/backup/{day}/mikrotik'
 
 if not os.path.isdir(path):
-     os.makedirs(path)
+    os.makedirs(path)
 
 os.chdir(path)
 
@@ -62,7 +61,7 @@ for device in devices:
 
     filename = filename_pattern.format(device['name'])
     try:
-    	with ftplib.FTP(device['ip'], device['user_name'], device['users_passwd']) as con:
+        with ftplib.FTP(device['ip'], device['user_name'], device['users_passwd']) as con:
             with open(filename, "wb") as f:
                 con.retrbinary('RETR ' + filename, f.write)
             print("    File transfer: done")
@@ -72,28 +71,28 @@ for device in devices:
 for device in devices:
     print("Connect to {}:".format(device['ip']))
 
-    #Создание сокета и объекта устройства
+    # Создание сокета и объекта устройства
     try:
-    	s = libapi.socketOpen(device['ip'])
+        s = libapi.socketOpen(device['ip'])
     except Exception as e:
         continue
     dev_api = libapi.ApiRos(s)
 
-    #Авторизация на устройстве
+    # Авторизация на устройстве
     try:
         if not dev_api.login(device['user_name'], device['users_passwd']):
             break
     except Exception as e:
         continue
 
-    #Команда для добавление bridge-интерфейса
+    # Команда для добавление bridge-интерфейса
     command = ["/file/remove", f"=numbers={device['name']}_backup"]
 
-    #Выполнение команды на устройстве
+    # Выполнение команды на устройстве
     dev_api.writeSentence(command)
 
-    #Получение результата выполнения команды
+    # Получение результата выполнения команды
     res = libapi.readResponse(dev_api)
 
-    #Закрытие сокета
+    # Закрытие сокета
     libapi.socketClose(s)

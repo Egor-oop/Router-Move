@@ -21,18 +21,17 @@ with connection.cursor() as cur:
 day = str(datetime.date.today())
 path = f'/home/backup/{day}/eltex'
 if not os.path.isdir(path):
-     os.makedirs(path)
+    os.makedirs(path)
 
 os.chdir(path)
 
-
 now = datetime.datetime.now()
 
-#host = "192.168.15.1"
+# host = "192.168.15.1"
 
-#username = "oleg"
-#password = "ovg7979celeron"
-#filename_prefix = "eltex-backup"
+# username = "oleg"
+# password = "ovg7979celeron"
+# filename_prefix = "eltex-backup"
 
 for device in devices:
     try:
@@ -46,13 +45,13 @@ for device in devices:
         tn.read_until(b'#')
         tn.write(b"sh run\n")
         tn.write(b"exit\n")
-        output=tn.read_until(b'#')
+        output = tn.read_until(b'#')
         output = output.decode("ascii")
 
         filename_pattern = '{}_backup.rsc'
         filename = filename_pattern.format(device['name'])
 
-        fp=open(filename,"w")
+        fp = open(filename, "w")
         fp.write(output)
         fp.close()
     except Exception as e:

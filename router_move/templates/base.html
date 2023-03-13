@@ -8,8 +8,20 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-    {% block content %}
+<div class="content">
+    <div class="tree">
+        <div class="tree-text">
+            <a href="/devices">Devices</a></button><br>
+            <a href="/backup">Backup</a></button><br>
+            <a href="/statistic">Statistic</a></button>
+        </div>
+    </div>
+    <div class="main">
 
-    {% endblock %}
+        {% block content %}
+
+        {% endblock %}
+    </div>
+</div>
 </body>
 </html>

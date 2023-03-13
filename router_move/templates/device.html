@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Devices{% endblock %}
+
+{% block content %}
+<form name="editdeviceform" method="POST">
+    <div>
+        <p><b>Edit {{ device.name }}</b><br>
+            <input type="text" placeholder="name" name="name" value="{{ device.name }}">
+            <input type="text" placeholder="ip" name="ip" value="{{ device.ip }}">
+            <input type="text" placeholder="user" name="user" value="{{ device.user_name }}">
+            <input type="password" placeholder="password" name="passwd" value="{{ device.user_password }}">
+            <select name="device-type">
+                <option value="mikrotik" {% if device.device_type == 'mikrotik' %}selected{% endif %}>mikrotik</option>
+                <option value="cisco" {% if device.device_type == 'cisco' %}selected{% endif %}>cisco</option>
+                <option value="eltex" {% if device.device_type == 'eltex' %}selected{% endif %}>eltex</option>
+            </select>
+        </p>
+    </div>
+    <div class="content">
+        <input type="submit" value="Add">
+    </div>
+</form>
+{% endblock %}
