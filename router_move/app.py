@@ -3,12 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from crontab import CronTab
 
-# connection = pymysql.connect(host='192.168.168.5',
-#                              user='admin',
-#                              password='parallaxtal',
-#                              database='RouterMove',
-#                              cursorclass=pymysql.cursors.DictCursor)
-
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
