@@ -1,98 +1,95 @@
 import libapi
 import ftplib
-import pymysql.cursors
 import os
 import datetime
+from fetch_devices import fetch_devices
+import secrets
 
-connection = pymysql.connect(host='192.168.168.5',
-                             user='admin',
-                             password='parallaxtal',
-                             database='RouterMove',
-                             cursorclass=pymysql.cursors.DictCursor)
 
-with connection.cursor() as cur:
-    cur.execute('''SELECT * FROM devices WHERE device_type = "mikrotik"''')
-    results = cur.fetchall()
-    devices = []
-    for result in results:
-        devices.append(result)
+def backup_mikrotik(directory: str) -> None:
+    devices = fetch_devices('mikrotik')
+    for device in devices:
+        print("Connect to {}:".format(device.ip))
+        filename = f'{device.name}_backup.rsc'
 
-for device in devices:
-    print("Connect to {}:".format(device['ip']))
+        # Создание сокета и объекта устройства
+        try:
+            s = libapi.socketOpen(device.ip)
+        except Exception as e:
+            continue
+        dev_api = libapi.ApiRos(s)
 
-    # Создание сокета и объекта устройства
-    try:
-        s = libapi.socketOpen(device['ip'])
-    except Exception as e:
-        continue
-    dev_api = libapi.ApiRos(s)
+        # Авторизация на устройстве
+        try:
+            if not dev_api.login(device.user_name, device.user_password):
+                break
+        except Exception as e:
+            continue
 
-    # Авторизация на устройстве
-    try:
-        if not dev_api.login(device['user_name'], device['users_passwd']):
-            break
-    except Exception as e:
-        continue
+        command = ['/export', f'=file={filename}', '=show-sensitive', '=terse']
 
-    command = ["/export", f"=file={device['name']}_backup"]
+        # Выполнение команды на устройстве
+        dev_api.writeSentence(command)
 
-    # Выполнение команды на устройстве
-    dev_api.writeSentence(command)
+        # Получение результата выполнения команды
+        res = libapi.readResponse(dev_api)
 
-    # Получение результата выполнения команды
-    res = libapi.readResponse(dev_api)
+        # Закрытие сокета
+        libapi.socketClose(s)
 
-    # Закрытие сокета
-    libapi.socketClose(s)
+    day = str(datetime.date.today())
 
-day = str(datetime.date.today())
+    path = f'{directory}/{day}/mikrotik'
 
-path = f'/home/backup/{day}/mikrotik'
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
-if not os.path.isdir(path):
-    os.makedirs(path)
+    os.chdir(path)
 
-os.chdir(path)
+    filename_pattern = '{}_backup.rsc'
+    for device in devices:
+        print("Connect to {}:".format(device.ip))
+        filename = filename_pattern.format(device.name)
 
-filename_pattern = '{}_backup.rsc'
+        try:
+            with ftplib.FTP(device.ip, device.user_name, device.user_password) as con:
+                if os.path.isfile(filename):
+                    filename = f'{device.name}_{secrets.token_urlsafe(6)}_backup.rsc'
+                with open(filename, "wb") as f:
+                    con.retrbinary('RETR ' + filename_pattern.format(device.name), f.write)
+                print("    File transfer: done")
+        except Exception as e:
+            continue
 
-for device in devices:
-    print("Connect to {}:".format(device['ip']))
+    for device in devices:
+        print("Connect to {}:".format(device.ip))
 
-    filename = filename_pattern.format(device['name'])
-    try:
-        with ftplib.FTP(device['ip'], device['user_name'], device['users_passwd']) as con:
-            with open(filename, "wb") as f:
-                con.retrbinary('RETR ' + filename, f.write)
-            print("    File transfer: done")
-    except Exception as e:
-        continue
+        # Создание сокета и объекта устройства
+        try:
+            s = libapi.socketOpen(device.ip)
+        except Exception as e:
+            continue
+        dev_api = libapi.ApiRos(s)
 
-for device in devices:
-    print("Connect to {}:".format(device['ip']))
+        # Авторизация на устройстве
+        try:
+            if not dev_api.login(device.user_name, device.user_password):
+                break
+        except Exception as e:
+            continue
 
-    # Создание сокета и объекта устройства
-    try:
-        s = libapi.socketOpen(device['ip'])
-    except Exception as e:
-        continue
-    dev_api = libapi.ApiRos(s)
+        # Команда для добавление bridge-интерфейса
+        command = ["/file/remove", f"=numbers={device.name}_backup"]
 
-    # Авторизация на устройстве
-    try:
-        if not dev_api.login(device['user_name'], device['users_passwd']):
-            break
-    except Exception as e:
-        continue
+        # Выполнение команды на устройстве
+        dev_api.writeSentence(command)
 
-    # Команда для добавление bridge-интерфейса
-    command = ["/file/remove", f"=numbers={device['name']}_backup"]
+        # Получение результата выполнения команды
+        res = libapi.readResponse(dev_api)
 
-    # Выполнение команды на устройстве
-    dev_api.writeSentence(command)
+        # Закрытие сокета
+        libapi.socketClose(s)
 
-    # Получение результата выполнения команды
-    res = libapi.readResponse(dev_api)
 
-    # Закрытие сокета
-    libapi.socketClose(s)
+if __name__ == '__main__':
+    backup_mikrotik('/Users/egorgulido/Desktop')
