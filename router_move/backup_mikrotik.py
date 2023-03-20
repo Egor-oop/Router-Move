@@ -1,9 +1,10 @@
-import libapi
+from router_move import libapi
+from router_move.fetch_devices import fetch_devices
 import ftplib
 import os
 import datetime
-from fetch_devices import fetch_devices
 import secrets
+# from app import Device
 
 
 def backup_mikrotik(directory: str) -> None:
@@ -45,7 +46,6 @@ def backup_mikrotik(directory: str) -> None:
         os.makedirs(path)
 
     os.chdir(path)
-
     filename_pattern = '{}_backup.rsc'
     for device in devices:
         print("Connect to {}:".format(device.ip))

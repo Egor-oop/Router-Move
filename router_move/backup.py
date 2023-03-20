@@ -1,10 +1,13 @@
-import os
+import socket
+from .backup_mikrotik import backup_mikrotik
 
-try:
-    os.system('/usr/bin/python3 /home/python/router_move/backup_mikrotik.py')
-except soket.gaierror:
-    print('unknown ip')
-else:
-    print('unknown ip')
-os.system('/usr/bin/python3 /home/python/router_move/backup_eltex.py')
-os.system('/usr/bin/python3 /home/python/router_move/backup_cisco.py')
+
+def run_backup(directory: str) -> None:
+    try:
+        backup_mikrotik(directory)
+    except socket.gaierror:
+        print('unknown ip')
+
+
+if __name__ == '__main__':
+    run_backup('/Users/egorgulido/Desktop')

@@ -1,4 +1,5 @@
-from app import app, Device
+from router_move import app
+from router_move.models import Device
 
 
 def fetch_devices(device_type: str) -> list:
