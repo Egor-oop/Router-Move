@@ -1,58 +1,42 @@
-#!/usr/bin/python
-
+import secrets
 import telnetlib
 import datetime
 import os
-import pymysql.cursors
+from router_move.fetch_devices import fetch_devices
 
-connection = pymysql.connect(host='192.168.168.5',
-                             user='admin',
-                             password='parallaxtal',
-                             database='RouterMove',
-                             cursorclass=pymysql.cursors.DictCursor)
 
-with connection.cursor() as cur:
-    cur.execute('''SELECT * FROM devices WHERE device_type = "eltex"''')
-    results = cur.fetchall()
-    devices = []
-    for result in results:
-        devices.append(result)
+def backup_eltex(directory: str) -> None:
+    devices = fetch_devices('eltex')
 
-day = str(datetime.date.today())
-path = f'/home/backup/{day}/eltex'
-if not os.path.isdir(path):
-    os.makedirs(path)
+    day = str(datetime.date.today())
+    path = f'{directory}/{day}/eltex'
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
-os.chdir(path)
+    os.chdir(path)
 
-now = datetime.datetime.now()
+    for device in devices:
+        try:
+            tn = telnetlib.Telnet(device.ip)
+            tn.read_until(b"ame:")
+            tn.write(device.user_name.encode("ascii") + b"\n")
+            tn.read_until(b"Password:")
+            tn.write(device.user_password.encode("ascii") + b"\n")
+            tn.read_until(b'#')
+            tn.write(b'terminal datadump\n')
+            tn.read_until(b'#')
+            tn.write(b"sh run\n")
+            tn.write(b"exit\n")
+            output = tn.read_until(b'\nsw_')
+            output = output.decode("ascii")
 
-# host = "192.168.15.1"
+            output = output[:-4]
+            filename = f'{device.name}_backup.rsc'
+            if os.path.isfile(filename):
+                filename = f'{device.name}_{secrets.token_urlsafe(6)}_backup.rsc'
 
-# username = "oleg"
-# password = "ovg7979celeron"
-# filename_prefix = "eltex-backup"
-
-for device in devices:
-    try:
-        tn = telnetlib.Telnet(device['ip'])
-        tn.read_until(b"ame:")
-        tn.write(device['user_name'].encode("ascii") + b"\n")
-        tn.read_until(b"Password:")
-        tn.write(device['users_passwd'].encode("ascii") + b"\n")
-        tn.read_until(b'#')
-        tn.write(b'terminal datadump\n')
-        tn.read_until(b'#')
-        tn.write(b"sh run\n")
-        tn.write(b"exit\n")
-        output = tn.read_until(b'#')
-        output = output.decode("ascii")
-
-        filename_pattern = '{}_backup.rsc'
-        filename = filename_pattern.format(device['name'])
-
-        fp = open(filename, "w")
-        fp.write(output)
-        fp.close()
-    except Exception as e:
-        continue
+            fp = open(filename, "w")
+            fp.write(output)
+            fp.close()
+        except Exception as e:
+            continue
