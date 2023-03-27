@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect
 from router_move.models import Device, BackupDirectory
 from router_move import app, db
+import os
 
 from crontab import CronTab
 
@@ -73,13 +74,13 @@ def backupsettings():
     if request.method == 'POST':
         weekdays_list = request.form.getlist('weekday')
 
-        my_cron = CronTab(user='root')
+        my_cron = CronTab(user=True)
 
         for job in my_cron:
             if job.comment == 'startbackup':
                 my_cron.remove(job)
 
-        job = my_cron.new(command='/usr/bin/python3 /home/python/router_move/backup.py', comment='startbackup')
+        job = my_cron.new(command=f'/usr/bin/python3 {os.path.dirname(__file__)}/backup.py', comment='startbackup')
 
         if request.form.get('day') != 'star':
             job.day.on(request.form.get('day'))
