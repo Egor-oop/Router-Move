@@ -5,8 +5,6 @@ import os
 
 from crontab import CronTab
 
-from router_move.backup import run_backup
-
 
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/devices', methods=['POST', 'GET'])
@@ -64,7 +62,7 @@ def backups():
             directory = BackupDirectory(request.form['directory'])
             db.session.add(directory)
             db.session.commit()
-        run_backup(directory.path)
+        os.system(f'/usr/bin/python3 {os.path.dirname(__file__)}/backup.py')
     context = {'directory': directory.path}
     return render_template('backup.html', **context)
 
@@ -80,7 +78,7 @@ def backupsettings():
             if job.comment == 'startbackup':
                 my_cron.remove(job)
 
-        job = my_cron.new(command=f'/usr/bin/python3 {os.path.dirname(__file__)}/backup.py', comment='startbackup')
+        job = my_cron.new(command=f'/usr/bin/python3 {os.path.dirname(__file__)}/backup.py {BackupDirectory.query.all()[-1]}', comment='startbackup')
 
         if request.form.get('day') != 'star':
             job.day.on(request.form.get('day'))
@@ -88,11 +86,6 @@ def backupsettings():
             job.hour.on(request.form.get('hours'))
         if request.form.get('minute') != 'star':
             job.minute.on(request.form.get('minute'))
-        '''
-        job.day.on(request.form.get('day'))
-        job.hour.on(request.form.get('hours'))
-        job.minute.on(request.form.get('minute'))
-        '''
         job.dow.on(*weekdays_list)
 
         my_cron.write()
