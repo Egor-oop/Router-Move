@@ -78,7 +78,9 @@ def backupsettings():
             if job.comment == 'startbackup':
                 my_cron.remove(job)
 
-        job = my_cron.new(command=f'/usr/bin/python3 {os.path.dirname(__file__)}/backup.py {BackupDirectory.query.all()[-1]}', comment='startbackup')
+        job = my_cron.new(
+            command=f'/usr/bin/python3 {os.path.dirname(__file__)}/backup.py {BackupDirectory.query.all()[-1].path}',
+            comment='startbackup')
 
         if request.form.get('day') != 'star':
             job.day.on(request.form.get('day'))
@@ -91,30 +93,3 @@ def backupsettings():
         my_cron.write()
 
     return render_template('backupsettings.html')
-
-
-@app.route('/statistic')
-def statistic():
-    # with connection.cursor() as cur:
-    #     cur.execute('''SELECT * FROM statistic''')
-    #     results = cur.fetchall()
-    #     statistic_list = []
-    #     for result in results:
-    #         statistic_list.append(result)
-    #
-    # context = {'destatistic': statistic_list}
-    # connection.commit()
-    return render_template('statistic.html')
-
-
-@app.route('/authorization', methods=['POST', 'GET'])
-def authorization():
-    # if request.method == 'POST':
-    #     with connection.cursor() as cur:d
-    #         login = cur.execute("SELECT name FROM users;")
-    #         passwd = cur.execute("SELECT passwd FROM users;")
-    #
-    #         if request.form.get('login') == login:
-    #             if request.form.get('passwd') == passwd:
-    #                 redirect('/devices')
-    return render_template('authorization.html')
