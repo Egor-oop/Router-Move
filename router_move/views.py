@@ -62,7 +62,7 @@ def backups():
             directory = BackupDirectory(request.form['directory'])
             db.session.add(directory)
             db.session.commit()
-        os.system(f'/usr/bin/python3 {os.path.dirname(__file__)}/backup.py')
+        os.system(f'/usr/bin/python3 {os.path.dirname(__file__)}/backup.py {BackupDirectory.query.all()[-1].path}')
     context = {'directory': directory.path}
     return render_template('backup.html', **context)
 
