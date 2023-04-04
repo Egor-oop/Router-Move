@@ -1,28 +1,35 @@
-from router_move import libapi
-from router_move.fetch_devices import fetch_devices
+import libapi
+from fetch_devices import fetch_devices
 import ftplib
 import os
 import datetime
 import secrets
-# from app import Device
 
 
 def backup_mikrotik(directory: str) -> None:
     devices = fetch_devices('mikrotik')
+
+    day = str(datetime.date.today())
+
+    path = f'{directory}/{day}/mikrotik'
+
+    if not os.path.isdir(path):
+        os.makedirs(path)
+
     for device in devices:
-        print("Connect to {}:".format(device.ip))
-        filename = f'{device.name}_backup.rsc'
+        print("Connect to {}:".format(device[2]))
+        filename = f'{device[1]}_backup.rsc'
 
         # Создание сокета и объекта устройства
         try:
-            s = libapi.socketOpen(device.ip)
+            s = libapi.socketOpen(device[2])
         except Exception as e:
             continue
         dev_api = libapi.ApiRos(s)
 
         # Авторизация на устройстве
         try:
-            if not dev_api.login(device.user_name, device.user_password):
+            if not dev_api.login(device[3], device[4]):
                 break
         except Exception as e:
             continue
@@ -38,48 +45,40 @@ def backup_mikrotik(directory: str) -> None:
         # Закрытие сокета
         libapi.socketClose(s)
 
-    day = str(datetime.date.today())
-
-    path = f'{directory}/{day}/mikrotik'
-
-    if not os.path.isdir(path):
-        os.makedirs(path)
-
-    os.chdir(path)
     filename_pattern = '{}_backup.rsc'
     for device in devices:
-        print("Connect to {}:".format(device.ip))
-        filename = filename_pattern.format(device.name)
+        print("Connect to {}:".format(device[2]))
+        filename = filename_pattern.format(device[1])
 
         try:
-            with ftplib.FTP(device.ip, device.user_name, device.user_password) as con:
-                if os.path.isfile(filename):
-                    filename = f'{device.name}_{secrets.token_urlsafe(6)}_backup.rsc'
-                with open(filename, "wb") as f:
-                    con.retrbinary('RETR ' + filename_pattern.format(device.name), f.write)
+            with ftplib.FTP(device[2], device[3], device[4]) as con:
+                if os.path.isfile(f'{path}/{filename}'):
+                    filename = f'{device[1]}_{secrets.token_urlsafe(6)}_backup.rsc'
+                with open(f'{path}/{filename}', "wb") as f:
+                    con.retrbinary('RETR ' + filename_pattern.format(device[1]), f.write)
                 print("    File transfer: done")
         except Exception as e:
             continue
 
     for device in devices:
-        print("Connect to {}:".format(device.ip))
+        print("Connect to {}:".format(device[2],))
 
         # Создание сокета и объекта устройства
         try:
-            s = libapi.socketOpen(device.ip)
+            s = libapi.socketOpen(device[2],)
         except Exception as e:
             continue
         dev_api = libapi.ApiRos(s)
 
         # Авторизация на устройстве
         try:
-            if not dev_api.login(device.user_name, device.user_password):
+            if not dev_api.login(device[3], device[4]):
                 break
         except Exception as e:
             continue
 
         # Команда для добавление bridge-интерфейса
-        command = ["/file/remove", f"=numbers={device.name}_backup"]
+        command = ["/file/remove", f"=numbers={device[1]}_backup"]
 
         # Выполнение команды на устройстве
         dev_api.writeSentence(command)

@@ -1,12 +1,11 @@
 import socket
-from router_move.backup_mikrotik import backup_mikrotik
-from router_move.backup_eltex import backup_eltex
-from router_move.backup_cisco import backup_cisco
+from backup_mikrotik import backup_mikrotik
+from backup_eltex import backup_eltex
+from backup_cisco import backup_cisco
 import sys
 
 
 def run_backup(directory: str) -> None:
-    paths = sys.path
     try:
         backup_mikrotik(directory)
         backup_eltex(directory)
@@ -16,4 +15,7 @@ def run_backup(directory: str) -> None:
 
 
 if __name__ == '__main__':
-    run_backup('/Users/egorgulido/Desktop')
+    try:
+        run_backup(sys.argv[1])
+    except IndexError:
+        print('Please, provide a path to a directory to make backups')

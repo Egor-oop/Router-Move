@@ -1,7 +1,12 @@
-from router_move import app
-from router_move.models import Device
+import sqlite3
+import os
 
 
 def fetch_devices(device_type: str) -> list:
-    with app.app_context():
-        return Device.query.filter_by(device_type=device_type).all()
+    path = os.path.dirname(os.path.abspath(__file__))
+    con = sqlite3.connect(f'{path}/database.db')
+    cur = con.cursor()
+    res = cur.execute(f"SELECT * FROM device WHERE device_type='{device_type}'")
+    devices = res.fetchall()
+    con.close()
+    return devices
