@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Backup Files{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Backup Files</h1><br>
+    <form method="post">
+        <select name="device_type_filter">
+            <option value="mikrotik" selected="selected">mikrotik</option>
+            <option value="cisco">cisco</option>
+            <option value="eltex">eltex</option>
+        </select>
+        <input type="submit" value="Show"/>
+    </form>
+    <div class="device-list">
+        <table>
+            <tr class="grey-td">
+                <th>name</th>
+                <th>ip</th>
+                <th>type</th>
+            </tr>
+            {% for device in devices %}
+            <tr>
+                <td class="wide">{{ device.name }}</td>
+                <td>{{ device.ip }}</td>
+                <td>{{ device.device_type }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

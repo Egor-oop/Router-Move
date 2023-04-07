@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../static/css/style.css">
@@ -7,20 +8,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
 </head>
+
 <body>
-<div class="content">
-    <div class="tree">
-        <div class="tree-text">
-            <a href="/devices">Devices</a></button><br>
-            <a href="/backup">Backup</a></button><br>
+    <div class="content">
+        <div class="tree">
+            <a href="/devices">Devices</a>
+            <a href="/backup">Backup</a>
+            <a href="/backup/files">Backup Files</a>
+        </div>
+        <div class="main">
+            {% block content %}
+
+            {% endblock %}
         </div>
     </div>
-    <div class="main">
-
-        {% block content %}
-
-        {% endblock %}
-    </div>
-</div>
 </body>
+
 </html>

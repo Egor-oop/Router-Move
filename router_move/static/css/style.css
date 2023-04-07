@@ -15,24 +15,17 @@ a {
     border: 2px solid #fe6637;
     border-radius: 10px;
     text-decoration: none;
-    flex: 1;
     margin: 0px 7px 0px 0px;
     text-align: center;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
     transition: box-shadow 0.6s;
+    display: flex;
+    flex-direction: column;
 }
 
 .tree:hover {
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
     transition: all 0.6s;
-}
-
-.tree-text {
-    margin: 10px 0px 12px 0px;
-}
-
-.tree-text:hover {
-    font-family:Impact, Haettenschweiler, 'Bold', sans-serif;
 }
 
 .main {

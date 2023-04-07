@@ -29,3 +29,15 @@ class BackupDirectory(db.Model):
 
     def __repr__(self):
         return f'<BackupDirectory {self.path}>'
+
+
+class BackupFile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(40), nullable=False)
+    path = db.Column(db.String(150), nullable=False)
+
+    def __init__(self, path):
+        self.path = path
+
+    def __repr__(self):
+        return f'<BackupFile {self.path}>'

@@ -93,3 +93,13 @@ def backupsettings():
         my_cron.write()
 
     return render_template('backupsettings.html')
+
+
+@app.route('/backup/files', methods=['POST', 'GET'])
+def backup_files():
+    if request.method == 'POST':
+        devices = Device.query.filter_by(device_type=request.form['device_type_filter']).all()
+    else:
+        devices = Device.query.filter_by(device_type='mikrotik').all()
+    context = {'devices': devices}
+    return render_template('backupfiles.html', **context)
